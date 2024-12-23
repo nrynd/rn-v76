@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import IconFa from 'react-native-vector-icons/FontAwesome6';
@@ -9,26 +9,41 @@ import ProfileScreen from '../screens/profile/ProfileScreen';
 import ArticleScreen from '../screens/article/ArticleScreen';
 import LoginScreen from '../screens/login/LoginScreen';
 import RegisterScreen from '../screens/register/RegisterScreen';
+import { Context } from '../context/Context';
+import { COLOR } from '../constant/Colors';
+import { useColorScheme } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 function MainTabs() {
+    const { theme } = useContext(Context);
+    const colorScheme = useColorScheme();
+
+    const isThemeDark = theme === 'dark' || (theme === 'flexible' && colorScheme === 'dark');
+
+    const t = isThemeDark ? 'dark' : 'light';
+
     return (
-        <Tab.Navigator screenOptions={{ headerShown: false, animation: 'fade' }}>
+        <Tab.Navigator
+            screenOptions={{
+                headerShown: false,
+                animation: 'fade',
+                tabBarActiveTintColor: COLOR[t].primary,
+                tabBarInactiveTintColor: COLOR[t].outline,
+            }}
+        >
             <Tab.Screen
                 name="Home"
                 component={HomeScreen}
                 options={{
-                    tabBarActiveTintColor: '#22d3ee',
-                    tabBarInactiveTintColor: '#cbd5e1',
                     tabBarIcon: ({ focused, size }: any) => {
                         let icon;
 
                         if (focused) {
-                            icon = <IconFa name="house-chimney" color="#22d3ee" style={{ fontSize: size }} />;
+                            icon = <IconFa name="house-chimney" color={COLOR[t].primary} style={{ fontSize: size }} />;
                         } else {
-                            icon = <IconFa name="house-chimney" color="#cbd5e1" style={{ fontSize: size }} />;
+                            icon = <IconFa name="house-chimney" color={COLOR[t].outline} style={{ fontSize: size }} />;
                         }
 
                         return icon;
@@ -39,15 +54,13 @@ function MainTabs() {
                 name="Products"
                 component={ProductScreen}
                 options={{
-                    tabBarActiveTintColor: '#22d3ee',
-                    tabBarInactiveTintColor: '#cbd5e1',
                     tabBarIcon: ({ focused, size }: any) => {
                         let icon;
 
                         if (focused) {
-                            icon = <IconFa name="globe" color="#22d3ee" style={{ fontSize: size }} />;
+                            icon = <IconFa name="globe" color={COLOR[t].primary} style={{ fontSize: size }} />;
                         } else {
-                            icon = <IconFa name="globe" color="#cbd5e1" style={{ fontSize: size }} />;
+                            icon = <IconFa name="globe" color={COLOR[t].outline} style={{ fontSize: size }} />;
                         }
 
                         return icon;
@@ -58,15 +71,13 @@ function MainTabs() {
                 name="Menu"
                 component={MenuScreen}
                 options={{
-                    tabBarActiveTintColor: '#22d3ee',
-                    tabBarInactiveTintColor: '#cbd5e1',
                     tabBarIcon: ({ focused, size }: any) => {
                         let icon;
 
                         if (focused) {
-                            icon = <IconFa name="bars" color="#22d3ee" style={{ fontSize: size }} />;
+                            icon = <IconFa name="bars" color={COLOR[t].primary} style={{ fontSize: size }} />;
                         } else {
-                            icon = <IconFa name="bars" color="#cbd5e1" style={{ fontSize: size }} />;
+                            icon = <IconFa name="bars" color={COLOR[t].outline} style={{ fontSize: size }} />;
                         }
 
                         return icon;
@@ -77,15 +88,13 @@ function MainTabs() {
                 name="Profile"
                 component={ProfileScreen}
                 options={{
-                    tabBarActiveTintColor: '#22d3ee',
-                    tabBarInactiveTintColor: '#cbd5e1',
                     tabBarIcon: ({ focused, size }: any) => {
                         let icon;
 
                         if (focused) {
-                            icon = <IconFa name="user-large" color="#22d3ee" style={{ fontSize: size }} />;
+                            icon = <IconFa name="user-large" color={COLOR[t].primary} style={{ fontSize: size }} />;
                         } else {
-                            icon = <IconFa name="user-large" color="#cbd5e1" style={{ fontSize: size }} />;
+                            icon = <IconFa name="user-large" color={COLOR[t].outline} style={{ fontSize: size }} />;
                         }
 
                         return icon;
@@ -112,10 +121,6 @@ const Routes = () => {
                     <Stack.Screen name="SignUp" component={RegisterScreen} />
                 </Stack.Group>
             )}
-            {/* <Stack.Group screenOptions={{ presentation: 'modal' }}>
-                <Stack.Screen name="Help" component={Help} />
-                <Stack.Screen name="Invite" component={Invite} />
-            </Stack.Group> */}
         </Stack.Navigator>
     );
 };
