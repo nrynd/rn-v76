@@ -1,9 +1,14 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-import React, { useContext, useState } from 'react';
-import { View, StyleSheet, LayoutAnimation, useColorScheme } from 'react-native';
-import { Button, Card, List, RadioButton, Text } from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, LayoutAnimation } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { Card, List, RadioButton, Button } from 'react-native-paper';
 import { COLOR } from '../../constant/Colors';
-import { Context } from '../../context/Context';
+import { RootState } from '../../redux/store';
+import { GetTheme } from '../../helpers/general-helper';
+import { setTheme } from '../../redux/features/setting/settingSlice';
+import { logout } from '../../redux/features/auth/authSlice';
 
 const theme_list = [
     {
@@ -23,21 +28,25 @@ const theme_list = [
     },
 ];
 const HomeScreen = ({ navigation }: any) => {
-    const { toggleTheme, theme } = useContext(Context);
-    const colorScheme = useColorScheme();
-    const isThemeDark = theme === 'dark' || (theme === 'flexible' && colorScheme === 'dark');
-
-    const t = isThemeDark ? 'dark' : 'light';
+    const dispatch = useDispatch();
+    const { theme } = useSelector((state: RootState) => state.setting);
+    const { t } = GetTheme();
 
     const [expanded, setExpanded] = useState(true);
-    // const [selectedTheme, setSelectedTheme] = useState('light');
-
     const handlePress = () => setExpanded(!expanded);
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+
+            console.log('use effect home: ');
+
+        });
+
+        return unsubscribe;
+    }, [navigation]);
 
     return (
         <View style={styles.container}>
-            {/* <Text style={styles.text}>{`Selected Theme:  ${selectedTheme}`}</Text> */}
-
             <Card style={{ borderRadius: 0 }}>
                 <List.Section>
                     <List.Accordion
@@ -67,9 +76,7 @@ const HomeScreen = ({ navigation }: any) => {
                                                     return;
                                                 }
 
-                                                // setSelectedTheme(mode);
-
-                                                toggleTheme(mode);
+                                                dispatch(setTheme(mode));
                                             }}
                                             color={COLOR[t].primary}
                                             uncheckedColor={COLOR[t].outline}
@@ -83,13 +90,27 @@ const HomeScreen = ({ navigation }: any) => {
             </Card>
 
             <Button
+                dark={t === 'dark'}
                 mode="contained"
-                buttonColor={COLOR[t].primary}
+                // buttonColor={COLOR[t].primary}
                 textColor={COLOR[t].surface}
-                onPress={() => navigation.navigate('Article')}
                 style={{ borderRadius: 8, width: '50%', alignSelf: 'center' }}
+                contentStyle={{ backgroundColor: COLOR[t].primary }}
+                onPress={() => navigation.navigate('Article')}
             >
                 Go to Article
+            </Button>
+
+            <Button
+                dark={t === 'dark'}
+                mode="contained"
+                // buttonColor={COLOR[t].primary}
+                textColor={COLOR[t].surface}
+                style={{ borderRadius: 8, width: '50%', alignSelf: 'center' }}
+                contentStyle={{ backgroundColor: COLOR[t].error }}
+                onPress={() => dispatch(logout())}
+            >
+                Sign out
             </Button>
         </View>
     );
@@ -99,8 +120,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        // alignItems: 'center',
-        // justifyContent: 'center',
         gap: 20,
     },
     text: {

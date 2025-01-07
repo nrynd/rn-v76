@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import IconFa from 'react-native-vector-icons/FontAwesome6';
@@ -9,20 +9,16 @@ import ProfileScreen from '../screens/profile/ProfileScreen';
 import ArticleScreen from '../screens/article/ArticleScreen';
 import LoginScreen from '../screens/login/LoginScreen';
 import RegisterScreen from '../screens/register/RegisterScreen';
-import { Context } from '../context/Context';
 import { COLOR } from '../constant/Colors';
-import { useColorScheme } from 'react-native';
+import { GetTheme } from '../helpers/general-helper';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 function MainTabs() {
-    const { theme } = useContext(Context);
-    const colorScheme = useColorScheme();
-
-    const isThemeDark = theme === 'dark' || (theme === 'flexible' && colorScheme === 'dark');
-
-    const t = isThemeDark ? 'dark' : 'light';
+    const { t } = GetTheme();
 
     return (
         <Tab.Navigator
@@ -106,7 +102,7 @@ function MainTabs() {
 }
 
 const Routes = () => {
-    const isLoggedIn = true;
+    const { isLoggedIn } = useSelector((state: RootState) => state.auth);
 
     return (
         <Stack.Navigator>
